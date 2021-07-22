@@ -4,34 +4,30 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Índice</h1>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Crear Nuevo</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
                 Codigo
-                @*Html.DisplayNameFor(model => model.Codigo)*@
             </th>
             <th>
                 Nombre
-                @*Html.DisplayNameFor(model => model.Nombre)*@
             </th>
             <th>
                 Apellido
-                @*Html.DisplayNameFor(model => model.Apellido)*@
             </th>
             <th>
                 Direccion
-                @*Html.DisplayNameFor(model => model.Direccion)*@
             </th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
-        {
+         {
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Codigo)
@@ -46,11 +42,18 @@
                     @Html.DisplayFor(modelItem => item.Direccion)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.Primary */})
-                    @Html.ActionLink("Details", "Details", new { /* id=item.Primary */})
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.Primary */})
+                    @Html.ActionLink("Editar", "Edit", new { id = item.Codigo }, new { onclick = "return confirm('¿Está seguro de editar?')" }) |
+                    @Html.ActionLink("Detalles", "Details", new { Codigo = item.Codigo }) |
+                    @if (item.Estado == 1)
+                    {
+                        @Html.ActionLink("Desactivar", "Desactivar", new { id = item.Codigo }, new { onclick = "return confirm('¿Está seguro de Desactivar?')" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Activar", "Activar", new { id = item.Codigo }, new { onclick = "return confirm('¿Está seguro de Activar?')" })
+                    }
                 </td>
             </tr>
-        }
+         }
     </tbody>
 </table>

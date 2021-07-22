@@ -2,6 +2,7 @@
 using Crud.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,28 +12,13 @@ namespace Crud.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _applicationDbContext;
 
-        public UsuariosController(ApplicationDbContext context)
+        public UsuariosController(ApplicationDbContext applicationDbContext)
         {
-            _context = context;
+            _applicationDbContext = applicationDbContext;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            List<Usuario> usuarios = new List<Usuario>();
-            try
-            {
-                
-                return View(await _context.Usuario.ToListAsync());
-            }
-            catch(Exception ex)
-            {
-
-            }
-            return View(usuarios);
-        }
-        
         public IActionResult Index()
         {
             List<Usuario> usuarios = new List<Usuario>();
@@ -40,79 +26,130 @@ namespace Crud.Controllers
             return View(usuarios);
         }
 
-        // GET: UsuariosController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Create()
         {
             return View();
         }
-
-        // GET: UsuariosController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: UsuariosController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(Usuario usuario)
+        public IActionResult Create(Usuario usuario)
         {
             try
             {
-                List<Usuario> usuarios = new List<Usuario>();
-                usuarios = JsonConvert.DeserializeObject<List<Usuario>>(HttpContext.Session.GetString("ListaPersona"));
-                usuarios.Add(usuario);
-                HttpContext.Session.SetString("ListaPersona", JsonConvert.SerializeObject(usuarios));
-                return RedirectToAction(nameof(Index));
+                usuario.Estado = 1;
+                _applicationDbContext.Add(usuario);
+                _applicationDbContext.SaveChanges();
             }
-            catch
+            catch (Exception)
             {
-                return View();
+                return View(usuario);
             }
+            return RedirectToAction("Index");
         }
-
-        // GET: UsuariosController/Edit/5
-        public ActionResult Edit(int id)
+        public IActionResult Edit(int id)
         {
+            if (id == 0)
+            {
+                return RedirectToAction("Index");
+            }
+            Usuario usuario = _applicationDbContext.Usuario.Where(x => x.Codigo == id).FirstOrDefault();
+            //Usuario usuario = _applicationDbContext.Usuario.Find(id);
+            if (usuario == null)
+            {
+                return RedirectToAction("Index");
+            }
             return View();
         }
-
-        // POST: UsuariosController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public IActionResult Edit(int id, Usuario usuario)
         {
+            if (id != usuario.Codigo)
+            {
+                return RedirectToAction("Index");
+            }
             try
             {
-                return RedirectToAction(nameof(Index));
+                usuario.Estado = 1;
+                _applicationDbContext.Update(usuario);
+                _applicationDbContext.SaveChanges();
             }
-            catch
+            catch (Exception)
             {
-                return View();
+                return View(usuario);
             }
+            return RedirectToAction("Index");
         }
 
-        // GET: UsuariosController/Delete/5
-        public ActionResult Delete(int id)
+        public IActionResult Details(int Codigo)
         {
-            return View();
+            Usuario usuario = _applicationDbContext.Usuario.Where(x => x.Codigo == Codigo).FirstOrDefault();
+            
+            if (Codigo == 0)
+            {
+                return RedirectToAction("Index");
+            }
+            
+            if(usuario == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(usuario);
         }
 
-        // POST: UsuariosController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public IActionResult Delete(int id)
         {
+            if (id == 0)
+            {
+                return RedirectToAction("Index");
+            }
+            Usuario usuario = _applicationDbContext.Usuario.Find(id);
             try
             {
-                return RedirectToAction(nameof(Index));
+                _applicationDbContext.Remove(usuario);
+                _applicationDbContext.SaveChanges();
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return RedirectToAction("Index");
             }
+            return RedirectToAction("Index");
+        }
+        public IActionResult Desactivar(int id)
+        {
+            if (id == 0)
+            {
+                return RedirectToAction("Index");
+            }
+            Usuario usuario = _applicationDbContext.Usuario.Find(id);
+            try
+            {
+                usuario.Estado = 0;
+                _applicationDbContext.Update(usuario);
+                _applicationDbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+        public IActionResult Activar(int id)
+        {
+            if (id == 0)
+            {
+                return RedirectToAction("Index");
+            }
+            Usuario usuario = _applicationDbContext.Usuario.Find(id);
+            try
+            {
+                usuario.Estado = 1;
+                _applicationDbContext.Update(usuario);
+                _applicationDbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
         }
     }
 }
-
-

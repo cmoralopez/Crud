@@ -19,7 +19,7 @@ namespace Crud.Data
             base.OnModelCreating(builder);
             builder.Entity<Usuario>(en =>
             {
-                en.Haskey(e => e.Codigo);
+                en.HasKey(e => e.Codigo);
 
                 en.Property(e => e.Nombre)
                 //.IsRequeried()
@@ -34,6 +34,11 @@ namespace Crud.Data
                 en.Property(e => e.Direccion)
                 //.IsRequeried()
                 .HasMaxLength(250)
+                .IsUnicode(false);
+
+                en.Property(e => e.Estado)
+                //.IsRequeried()
+                //.HasMaxLength(250)
                 .IsUnicode(false);
             });
         }
