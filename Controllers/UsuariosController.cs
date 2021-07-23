@@ -1,5 +1,6 @@
 ﻿using Crud.Data;
 using Crud.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Crud.Controllers
 {
+    [Authorize]
     public class UsuariosController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;
@@ -19,6 +21,7 @@ namespace Crud.Controllers
             _applicationDbContext = applicationDbContext;
         }
 
+        [Authorize(Roles = "Owner,Final")]
         public IActionResult Index()
         {
             List<Usuario> usuarios = new List<Usuario>();
@@ -26,10 +29,12 @@ namespace Crud.Controllers
             return View(usuarios);
         }
 
+        [Authorize(Roles = "Owner")]
         public IActionResult Create()
         {
             return View();
         }
+        [Authorize(Roles = "Owner")]
         [HttpPost]
         public IActionResult Create(Usuario usuario)
         {
@@ -45,6 +50,7 @@ namespace Crud.Controllers
             }
             return RedirectToAction("Index");
         }
+        [Authorize(Roles = "Owner")]
         public IActionResult Edit(int id)
         {
             if (id == 0)
@@ -57,8 +63,9 @@ namespace Crud.Controllers
             {
                 return RedirectToAction("Index");
             }
-            return View();
+            return View(usuario);
         }
+        [Authorize(Roles = "Owner")]
         [HttpPost]
         public IActionResult Edit(int id, Usuario usuario)
         {
@@ -79,6 +86,7 @@ namespace Crud.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Owner,Final")]
         public IActionResult Details(int Codigo)
         {
             Usuario usuario = _applicationDbContext.Usuario.Where(x => x.Codigo == Codigo).FirstOrDefault();
@@ -95,24 +103,7 @@ namespace Crud.Controllers
             return View(usuario);
         }
 
-        public IActionResult Delete(int id)
-        {
-            if (id == 0)
-            {
-                return RedirectToAction("Index");
-            }
-            Usuario usuario = _applicationDbContext.Usuario.Find(id);
-            try
-            {
-                _applicationDbContext.Remove(usuario);
-                _applicationDbContext.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("Index");
-            }
-            return RedirectToAction("Index");
-        }
+        [Authorize(Roles = "Owner")]
         public IActionResult Desactivar(int id)
         {
             if (id == 0)
@@ -132,6 +123,7 @@ namespace Crud.Controllers
             }
             return RedirectToAction("Index");
         }
+        [Authorize(Roles = "Owner")]
         public IActionResult Activar(int id)
         {
             if (id == 0)
