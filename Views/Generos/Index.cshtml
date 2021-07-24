@@ -1,10 +1,11 @@
-﻿@model IEnumerable<Crud.ViewModel.UsuarioViewModel>
+﻿@model List<Crud.Models.Genero>
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Índice</h1>
+
 <p>
     <a asp-action="Create">Crear Nuevo</a>
 </p>
@@ -12,40 +13,31 @@
     <thead>
         <tr>
             <th>
-                Codigo
+                Detalles
             </th>
             <th>
-                Nombre
+                Estado
             </th>
-            <th>
-                Apellido
-            </th>
-            <th>
-                Direccion
-            </th>
-            <th>
-                Genero
-            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
-        {
+         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Codigo)
+                    @Html.DisplayFor(modelItem => item.Detalles)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Apellido)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Direccion)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DescripcionGenero)
+                    @if (item.Estado == 1)
+                    {
+                        <label>Activado</label>
+                    }
+                    else
+                    {
+                        <label>Desactivado</label>
+                    }
+                    @Html.DisplayFor(modelItem => item.Estado)
                 </td>
                 <td>
                     @Html.ActionLink("Editar", "Edit", new { id = item.Codigo }, new { onclick = "return confirm('¿Está seguro de editar?')" }) |
@@ -60,6 +52,6 @@
                     }
                 </td>
             </tr>
-        }
+         }
     </tbody>
 </table>

@@ -1,8 +1,10 @@
 ﻿using Crud.Data;
 using Crud.Models;
+using Crud.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,14 +26,23 @@ namespace Crud.Controllers
         [Authorize(Roles = "Owner,Final")]
         public IActionResult Index()
         {
-            List<Usuario> usuarios = new List<Usuario>();
-            usuarios = _applicationDbContext.Usuario.ToList();
+            List<UsuarioViewModel> usuarios = new List<UsuarioViewModel>();
+            usuarios = _applicationDbContext.Usuario.Select(c=> new UsuarioViewModel
+            {
+                Codigo = c.Codigo,
+                Nombre = c.Nombre,
+                Apellido= c.Apellido,
+                Direccion = c.Direccion,
+                Estado = c.Estado,
+                DescripcionGenero = c.CodigoGeneroNavigation.Detalles
+            }).ToList();
             return View(usuarios);
         }
 
         [Authorize(Roles = "Owner")]
         public IActionResult Create()
         {
+            ViewData["CodigoGenero"] = new SelectList(_applicationDbContext.Generos.Where(c=>c.Estado == 1).ToList(),"Codigo","Descripción");
             return View();
         }
         [Authorize(Roles = "Owner")]
@@ -46,6 +57,7 @@ namespace Crud.Controllers
             }
             catch (Exception)
             {
+                ViewData["CodigoGenero"] = new SelectList(_applicationDbContext.Generos.Where(c => c.Estado == 1).ToList(), "Codigo", "Descripción",usuario.CodigoGenero);
                 return View(usuario);
             }
             return RedirectToAction("Index");
@@ -58,11 +70,10 @@ namespace Crud.Controllers
                 return RedirectToAction("Index");
             }
             Usuario usuario = _applicationDbContext.Usuario.Where(x => x.Codigo == id).FirstOrDefault();
-            //Usuario usuario = _applicationDbContext.Usuario.Find(id);
+
             if (usuario == null)
-            {
                 return RedirectToAction("Index");
-            }
+            ViewData["CodigoGenero"] = new SelectList(_applicationDbContext.Generos.Where(c => c.Estado == 1).ToList(), "Codigo", "Descripción", usuario.CodigoGenero);
             return View(usuario);
         }
         [Authorize(Roles = "Owner")]
@@ -75,12 +86,12 @@ namespace Crud.Controllers
             }
             try
             {
-                usuario.Estado = 1;
                 _applicationDbContext.Update(usuario);
                 _applicationDbContext.SaveChanges();
             }
             catch (Exception)
             {
+                ViewData["CodigoGenero"] = new SelectList(_applicationDbContext.Generos.Where(c => c.Estado == 1).ToList(), "Codigo", "Descripción", usuario.CodigoGenero);
                 return View(usuario);
             }
             return RedirectToAction("Index");

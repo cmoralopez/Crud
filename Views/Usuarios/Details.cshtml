@@ -42,6 +42,24 @@
             }
             @Html.DisplayFor(model => model.Estado)
         </dd>
+        
+        <dt class="col-sm-2">
+            <th>
+                Genero
+            </th>
+            @*@Html.DisplayNameFor(model => model.CodigoGenero)*@
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.CodigoGenero == 1)
+            {
+                <label>Masculino</label>
+            }
+            else
+            {
+                <label>Femenino</label>
+            }
+            @Html.DisplayFor(model => model.CodigoGenero)
+        </dd>
     </dl>
 </div>
 <div>

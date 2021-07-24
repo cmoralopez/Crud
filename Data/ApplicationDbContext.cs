@@ -14,31 +14,49 @@ namespace Crud.Data
         {
         }
         public virtual DbSet<Usuario> Usuario { get; set; }
-        protected override void OnModelCreating(ModelBuilder builder)
+        public virtual DbSet<Genero> Generos { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
-            builder.Entity<Usuario>(en =>
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Genero>(entity =>
             {
-                en.HasKey(e => e.Codigo);
+                entity.HasKey(e => e.Codigo);
 
-                en.Property(e => e.Nombre)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
+                entity.ToTable("Genero");
 
-                en.Property(e => e.Apellido)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
+                entity.Property(e => e.Detalles)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
 
-                en.Property(e => e.Direccion)
-                .IsRequired()
-                .HasMaxLength(250)
-                .IsUnicode(false);
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.HasKey(e => e.Codigo)
+                    .HasName("PK__Usuario__06370DAD1F202943");
 
-                en.Property(e => e.Estado)
-                .IsRequired()
-                .IsUnicode(false);
+                entity.ToTable("Usuario");
+
+                entity.Property(e => e.Apellido)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Direccion)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.CodigoGeneroNavigation)
+                    .WithMany(p => p.Usuarios)
+                    .HasForeignKey(d => d.CodigoGenero)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Usuario_Genero");
             });
         }
     }

@@ -36,6 +36,13 @@
                 </section>
                 <section class="col col-6">
                     <div class="form-group">
+                        <label class="control-label">Género</label>
+                        <select asp-for="CodigoGenero" class="form-control" asp-items="ViewBag.CodigoGenero"></select>
+                        <span asp-validation-for="CodigoGenero" class="text-danger"></span>
+                    </div>
+                </section>
+                <section class="col col-6">
+                    <div class="form-group">
                         <input type="submit" value="Crear" class="btn btn-primary" />
                     </div>
                 </section>
